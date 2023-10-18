@@ -59,7 +59,7 @@ export const getServerSideConfig = () => {
     hideBalanceQuery: !!process.env.HIDE_BALANCE_QUERY,
     API_URL:
       process.env.API_URL ??
-      "http://chatbot-alb-1653663846.us-east-1.elb.amazonaws.com:9988/aws_completions",
+      "http://chatbot-alb-1653663846.us-east-1.elb.amazonaws.com:9988",
     API_KEY:
       process.env.API_KEY ??
       "https://rzp4stkn16.execute-api.us-east-2.amazonaws.com/prod/",

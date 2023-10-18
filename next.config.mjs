@@ -66,7 +66,8 @@ if (mode !== "export") {
     const ret = [
       {
         source: "/api/proxy/:path*",
-        destination: "https://api.openai.com/:path*",
+        destination: process.env.API_URL ??
+            "http://chatbot-alb-1653663846.us-east-1.elb.amazonaws.com:9988" + "/:path*",
       },
       {
         source: "/google-fonts/:path*",

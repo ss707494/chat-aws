@@ -3,7 +3,7 @@ import { getServerSideConfig } from "@/app/config/server";
 const _defaultConfig = {
   API_URL:
     process.env.API_URL ??
-    "http://chatbot-alb-1653663846.us-east-1.elb.amazonaws.com:9988/aws_completions",
+    "http://chatbot-alb-1653663846.us-east-1.elb.amazonaws.com:9988",
   API_KEY:
     process.env.API_KEY ??
     "https://rzp4stkn16.execute-api.us-east-2.amazonaws.com/prod/",
@@ -20,7 +20,10 @@ const _defaultConfig = {
   AWS_REGION: process.env.AWS_REGION ?? "cn-north-1",
   S3_BUCKET: process.env.S3_BUCKET ?? "191406342344-23-10-13-06-50-04-bucket",
 };
-const getConfig: () => Record<keyof typeof _defaultConfig, any> = () => {
+export const getAwsConfig: () => Record<
+  keyof typeof _defaultConfig,
+  any
+> = () => {
   const defaultConfig = getServerSideConfig();
 
   return Object.keys(defaultConfig).reduce((previousValue, currentValue) => {
@@ -35,7 +38,7 @@ const getConfig: () => Record<keyof typeof _defaultConfig, any> = () => {
 };
 
 export const fetchAws = async (msg: string) => {
-  const config = getConfig();
+  const config = getAwsConfig();
   let url = config.API_URL;
 
   let headers = {
@@ -60,7 +63,7 @@ export const fetchAws = async (msg: string) => {
   };
   try {
     if (!msg) return "";
-    let response = await fetch(url, {
+    let response = await fetch(`/api/proxy/aws_completions`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
@@ -89,14 +92,14 @@ export function readFromFile() {
   });
 }
 export const uploadAws = async () => {
-  const config = getConfig();
+  const config = getAwsConfig();
 
   const file = await readFromFile();
   let formData = new FormData();
 
   formData.append("file", file);
 
-  const response = await fetch(config.UPLOAD_URL, {
+  const response = await fetch(`/api/proxy/upload_doc`, {
     method: "POST",
     headers: {
       accept: "application/json, text/plain, */*",

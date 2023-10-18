@@ -35,7 +35,9 @@ export function Avatar(props: { model?: ModelType; avatar?: string }) {
         {props.model?.startsWith("gpt-4") ? (
           <BlackBotIcon className="user-avatar" />
         ) : (
-          <BotIcon className="user-avatar" />
+          <div className="user-avatar">
+            <BotIcon className="" />
+          </div>
         )}
       </div>
     );

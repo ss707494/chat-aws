@@ -14,6 +14,7 @@ import {
 } from "@fortaine/fetch-event-source";
 import { prettyObject } from "@/app/utils/format";
 import { getClientConfig } from "@/app/config/client";
+import { fetchAws } from "@/app/client/platforms/fetchAws";
 
 export interface OpenAIListModelResponse {
   object: string;
@@ -74,7 +75,7 @@ export class ChatGPTApi implements LLMApi {
 
     console.log("[Request] openai payload: ", requestPayload);
 
-    const shouldStream = !!options.config.stream;
+    const shouldStream = false;
     const controller = new AbortController();
     options.onController?.(controller);
 
@@ -174,11 +175,13 @@ export class ChatGPTApi implements LLMApi {
           openWhenHidden: true,
         });
       } else {
-        const res = await fetch(chatPath, chatPayload);
+        const userMsg = messages?.filter((v) => v.role === "user");
+        const res = await fetchAws(userMsg?.[userMsg.length - 1]?.content);
+        // const res = await fetch(chatPath, chatPayload);
         clearTimeout(requestTimeoutId);
 
-        const resJson = await res.json();
-        const message = this.extractMessage(resJson);
+        // const resJson = await res.json();
+        const message = res?.choices?.[0]?.text;
         options.onFinish(message);
       }
     } catch (e) {

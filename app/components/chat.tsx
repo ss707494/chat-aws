@@ -12,6 +12,7 @@ import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
 import RenameIcon from "../icons/rename.svg";
 import ExportIcon from "../icons/share.svg";
+import UploadIcon from "../icons/upload.svg";
 import ReturnIcon from "../icons/return.svg";
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
@@ -89,6 +90,7 @@ import { ChatCommandPrefix, useChatCommand, useCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
+import { uploadAws } from "../client/platforms/fetchAws";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -168,18 +170,18 @@ function PromptToast(props: {
 
   return (
     <div className={styles["prompt-toast"]} key="prompt-toast">
-      {props.showToast && (
-        <div
-          className={styles["prompt-toast-inner"] + " clickable"}
-          role="button"
-          onClick={() => props.setShowModal(true)}
-        >
-          <BrainIcon />
-          <span className={styles["prompt-toast-content"]}>
-            {Locale.Context.Toast(context.length)}
-          </span>
-        </div>
-      )}
+      {/*{props.showToast && (*/}
+      {/*  <div*/}
+      {/*    className={styles["prompt-toast-inner"] + " clickable"}*/}
+      {/*    role="button"*/}
+      {/*    onClick={() => props.setShowModal(true)}*/}
+      {/*  >*/}
+      {/*    <BrainIcon />*/}
+      {/*    <span className={styles["prompt-toast-content"]}>*/}
+      {/*      {Locale.Context.Toast(context.length)}*/}
+      {/*    </span>*/}
+      {/*  </div>*/}
+      {/*)}*/}
       {props.showModal && (
         <SessionConfigModel onClose={() => props.setShowModal(false)} />
       )}
@@ -671,17 +673,17 @@ function _Chat() {
     const n = text.trim().length;
 
     // clear search results
-    if (n === 0) {
-      setPromptHints([]);
-    } else if (text.startsWith(ChatCommandPrefix)) {
-      setPromptHints(chatCommands.search(text));
-    } else if (!config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
-      // check if need to trigger auto completion
-      if (text.startsWith("/")) {
-        let searchText = text.slice(1);
-        onSearch(searchText);
-      }
-    }
+    // if (n === 0) {
+    //   setPromptHints([]);
+    // } else if (text.startsWith(ChatCommandPrefix)) {
+    //   setPromptHints(chatCommands.search(text));
+    // } else if (!config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
+    //   // check if need to trigger auto completion
+    //   if (text.startsWith("/")) {
+    //     let searchText = text.slice(1);
+    //     onSearch(searchText);
+    //   }
+    // }
   };
 
   const doSubmit = (userInput: string) => {
@@ -1051,32 +1053,41 @@ function _Chat() {
         <div className={`window-header-title ${styles["chat-body-title"]}`}>
           <div
             className={`window-header-main-title ${styles["chat-body-main-title"]}`}
-            onClickCapture={() => setIsEditingMessage(true)}
+            // onClickCapture={() => setIsEditingMessage(true)}
           >
-            {!session.topic ? DEFAULT_TOPIC : session.topic}
+            黑马
+            {/*{!session.topic ? DEFAULT_TOPIC : session.topic}*/}
           </div>
           <div className="window-header-sub-title">
             {Locale.Chat.SubTitle(session.messages.length)}
           </div>
         </div>
         <div className="window-actions">
-          {!isMobileScreen && (
-            <div className="window-action-button">
-              <IconButton
-                icon={<RenameIcon />}
-                bordered
-                onClick={() => setIsEditingMessage(true)}
-              />
-            </div>
-          )}
+          {/*{!isMobileScreen && (*/}
+          {/*  <div className="window-action-button">*/}
+          {/*    <IconButton*/}
+          {/*      icon={<RenameIcon />}*/}
+          {/*      bordered*/}
+          {/*      onClick={() => setIsEditingMessage(true)}*/}
+          {/*    />*/}
+          {/*  </div>*/}
+          {/*)}*/}
+          {/*<div className="window-action-button">*/}
+          {/*  <IconButton*/}
+          {/*    icon={<ExportIcon />}*/}
+          {/*    bordered*/}
+          {/*    title={Locale.Chat.Actions.Export}*/}
+          {/*    onClick={() => {*/}
+          {/*      setShowExport(true);*/}
+          {/*    }}*/}
+          {/*  />*/}
+          {/*</div>*/}
           <div className="window-action-button">
             <IconButton
-              icon={<ExportIcon />}
+              icon={<UploadIcon />}
+              text={Locale.UI.Import}
               bordered
-              title={Locale.Chat.Actions.Export}
-              onClick={() => {
-                setShowExport(true);
-              }}
+              onClick={() => uploadAws()}
             />
           </div>
           {showMaxIcon && (
@@ -1131,68 +1142,67 @@ function _Chat() {
               >
                 <div className={styles["chat-message-container"]}>
                   <div className={styles["chat-message-header"]}>
-                    <div className={styles["chat-message-avatar"]}>
-                      <div className={styles["chat-message-edit"]}>
-                        <IconButton
-                          icon={<EditIcon />}
-                          onClick={async () => {
-                            const newMessage = await showPrompt(
-                              Locale.Chat.Actions.Edit,
-                              message.content,
-                              10,
-                            );
-                            chatStore.updateCurrentSession((session) => {
-                              const m = session.mask.context
-                                .concat(session.messages)
-                                .find((m) => m.id === message.id);
-                              if (m) {
-                                m.content = newMessage;
-                              }
-                            });
-                          }}
-                        ></IconButton>
-                      </div>
-                      {isUser ? (
-                        <Avatar avatar={config.avatar} />
-                      ) : (
-                        <>
-                          {["system"].includes(message.role) ? (
-                            <Avatar avatar="2699-fe0f" />
-                          ) : (
-                            <MaskAvatar mask={session.mask} />
-                          )}
-                        </>
-                      )}
-                    </div>
+                    {/*<div className={styles["chat-message-avatar"]}>*/}
+                    {/*  <div className={styles["chat-message-edit"]}>*/}
+                    {/*    <IconButton*/}
+                    {/*      icon={<EditIcon />}*/}
+                    {/*      onClick={async () => {*/}
+                    {/*        const newMessage = await showPrompt(*/}
+                    {/*          Locale.Chat.Actions.Edit,*/}
+                    {/*          message.content,*/}
+                    {/*          10,*/}
+                    {/*        );*/}
+                    {/*        chatStore.updateCurrentSession((session) => {*/}
+                    {/*          const m = session.mask.context*/}
+                    {/*            .concat(session.messages)*/}
+                    {/*            .find((m) => m.id === message.id);*/}
+                    {/*          if (m) {*/}
+                    {/*            m.content = newMessage;*/}
+                    {/*          }*/}
+                    {/*        });*/}
+                    {/*      }}*/}
+                    {/*    ></IconButton>*/}
+                    {/*  </div>*/}
+                    {/*  {isUser ? (*/}
+                    {/*    <Avatar avatar={config.avatar} />*/}
+                    {/*  ) : (*/}
+                    {/*    <>*/}
+                    {/*      {["system"].includes(message.role) ? (*/}
+                    {/*        <Avatar avatar="2699-fe0f" />*/}
+                    {/*      ) : (*/}
+                    {/*        <MaskAvatar mask={session.mask} />*/}
+                    {/*      )}*/}
+                    {/*    </>*/}
+                    {/*  )}*/}
+                    {/*</div>*/}
 
-                    {showActions && (
+                    {1 && (
                       <div className={styles["chat-message-actions"]}>
                         <div className={styles["chat-input-actions"]}>
-                          {message.streaming ? (
-                            <ChatAction
-                              text={Locale.Chat.Actions.Stop}
-                              icon={<StopIcon />}
-                              onClick={() => onUserStop(message.id ?? i)}
-                            />
-                          ) : (
+                          {message.streaming ? null : (
+                            // <ChatAction
+                            //   text={Locale.Chat.Actions.Stop}
+                            //   icon={<StopIcon />}
+                            //   onClick={() => onUserStop(message.id ?? i)}
+                            // />
                             <>
-                              <ChatAction
-                                text={Locale.Chat.Actions.Retry}
-                                icon={<ResetIcon />}
-                                onClick={() => onResend(message)}
-                              />
+                              {/*<ChatAction*/}
+                              {/*  text={Locale.Chat.Actions.Retry}*/}
+                              {/*  icon={<ResetIcon />}*/}
+                              {/*  onClick={() => onResend(message)}*/}
+                              {/*/>*/}
 
-                              <ChatAction
-                                text={Locale.Chat.Actions.Delete}
-                                icon={<DeleteIcon />}
-                                onClick={() => onDelete(message.id ?? i)}
-                              />
+                              {/*<ChatAction*/}
+                              {/*  text={Locale.Chat.Actions.Delete}*/}
+                              {/*  icon={<DeleteIcon />}*/}
+                              {/*  onClick={() => onDelete(message.id ?? i)}*/}
+                              {/*/>*/}
 
-                              <ChatAction
-                                text={Locale.Chat.Actions.Pin}
-                                icon={<PinIcon />}
-                                onClick={() => onPinMessage(message)}
-                              />
+                              {/*<ChatAction*/}
+                              {/*  text={Locale.Chat.Actions.Pin}*/}
+                              {/*  icon={<PinIcon />}*/}
+                              {/*  onClick={() => onPinMessage(message)}*/}
+                              {/*/>*/}
                               <ChatAction
                                 text={Locale.Chat.Actions.Copy}
                                 icon={<CopyIcon />}
@@ -1244,22 +1254,22 @@ function _Chat() {
       <div className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
-        <ChatActions
-          showPromptModal={() => setShowPromptModal(true)}
-          scrollToBottom={scrollToBottom}
-          hitBottom={hitBottom}
-          showPromptHints={() => {
-            // Click again to close
-            if (promptHints.length > 0) {
-              setPromptHints([]);
-              return;
-            }
+        {/*<ChatActions*/}
+        {/*  showPromptModal={() => setShowPromptModal(true)}*/}
+        {/*  scrollToBottom={scrollToBottom}*/}
+        {/*  hitBottom={hitBottom}*/}
+        {/*  showPromptHints={() => {*/}
+        {/*    // Click again to close*/}
+        {/*    if (promptHints.length > 0) {*/}
+        {/*      setPromptHints([]);*/}
+        {/*      return;*/}
+        {/*    }*/}
 
-            inputRef.current?.focus();
-            setUserInput("/");
-            onSearch("");
-          }}
-        />
+        {/*    inputRef.current?.focus();*/}
+        {/*    setUserInput("/");*/}
+        {/*    onSearch("");*/}
+        {/*  }}*/}
+        {/*/>*/}
         <div className={styles["chat-input-panel-inner"]}>
           <textarea
             ref={inputRef}
